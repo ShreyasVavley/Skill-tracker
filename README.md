@@ -5,6 +5,8 @@
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-14+-316192.svg)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.0+-38b2ac.svg)
 
+**🚀 Live Demo:** [https://skill-tracker-api-fe1g.onrender.com/](https://skill-tracker-api-fe1g.onrender.com/)
+
 A comprehensive, high-performance Database Management System (DBMS) project built to seamlessly track and manage professional skills and certifications. 
 
 Featuring a blazing-fast **FastAPI** backend, robust **PostgreSQL** relational database, and a beautiful, minimalist **"Midnight Obsidian"** themed frontend dashboard.
