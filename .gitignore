@@ -1,0 +1,10 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# Database
+skill_tracker.db
+
+# Other
+.env

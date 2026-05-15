@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skill & Certification Tracker</title>
+    <!-- Tailwind CSS (CDN for simplicity in minimalist setup) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        obsidian: {
+                            900: '#0b0f19',
+                            800: '#111827',
+                            700: '#1f2937'
+                        },
+                        accent: {
+                            500: '#3b82f6',
+                            400: '#60a5fa'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-obsidian-900 text-gray-200 min-h-screen font-sans antialiased selection:bg-accent-500 selection:text-white">
+
+    <div class="max-w-6xl mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="flex justify-between items-center mb-12 border-b border-gray-800 pb-6">
+            <div>
+                <h1 class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-accent-400 to-indigo-400">SkillTracker</h1>
+                <p class="text-sm text-gray-500 mt-1">Midnight Obsidian Edition</p>
+            </div>
+            <div class="flex gap-4">
+                <button onclick="refreshDashboard()" class="px-4 py-2 bg-obsidian-800 hover:bg-obsidian-700 border border-gray-700 rounded-lg transition-all shadow-sm">
+                    Refresh Data
+                </button>
+            </div>
+        </header>
+
+        <!-- Dashboard Stats -->
+        <section class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+            <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <h3 class="text-gray-400 text-sm font-medium mb-2">Active Certifications</h3>
+                <p class="text-4xl font-bold text-emerald-400" id="stat-active">0</p>
+            </div>
+            <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-rose-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <h3 class="text-gray-400 text-sm font-medium mb-2">Expired Certifications</h3>
+                <p class="text-4xl font-bold text-rose-400" id="stat-expired">0</p>
+            </div>
+            <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg relative overflow-hidden group">
+                <div class="absolute inset-0 bg-gradient-to-br from-amber-500/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                <h3 class="text-gray-400 text-sm font-medium mb-2">Expiring ≤ 30 Days</h3>
+                <p class="text-4xl font-bold text-amber-400" id="stat-expiring-soon">0</p>
+            </div>
+        </section>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Left Column: Forms -->
+            <div class="space-y-8">
+                <!-- Add User Form -->
+                <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white">Add New User</h2>
+                    <form id="form-user" class="space-y-4">
+                        <div>
+                            <label for="user-name" class="block text-sm text-gray-400 mb-1">Name</label>
+                            <input type="text" id="user-name" placeholder="John Doe" title="User Name" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                        </div>
+                        <div>
+                            <label for="user-email" class="block text-sm text-gray-400 mb-1">Email</label>
+                            <input type="email" id="user-email" placeholder="john@example.com" title="User Email" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                        </div>
+                        <button type="submit" class="w-full bg-accent-500 hover:bg-accent-400 text-white font-medium py-2 rounded-lg transition-colors">Save User</button>
+                    </form>
+                </div>
+
+                <!-- Add Organization & Certification -->
+                <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white">Setup Data</h2>
+                    <div class="grid grid-cols-2 gap-4">
+                        <form id="form-org" class="space-y-4">
+                            <div>
+                                <label for="org-name" class="block text-sm text-gray-400 mb-1">New Organization</label>
+                                <input type="text" id="org-name" placeholder="Organization Name" title="Organization Name" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-accent-500 mb-2">
+                                <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-2 rounded-lg transition-colors">Add Org</button>
+                            </div>
+                        </form>
+                        <form id="form-cert" class="space-y-4">
+                            <div>
+                                <label for="cert-name" class="block text-sm text-gray-400 mb-1">New Certification</label>
+                                <input type="text" id="cert-name" placeholder="Certification Name" title="Certification Name" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-accent-500 mb-2">
+                                <label for="cert-org-id" class="sr-only">Org ID</label>
+                                <input type="number" id="cert-org-id" placeholder="Org ID" title="Organization ID" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white text-sm focus:outline-none focus:border-accent-500 mb-2">
+                                <button type="submit" class="w-full bg-gray-700 hover:bg-gray-600 text-white text-sm font-medium py-2 rounded-lg transition-colors">Add Cert</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Link Certification Form -->
+                <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white">Link Certification to User</h2>
+                    <form id="form-user-cert" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="uc-user-id" class="block text-sm text-gray-400 mb-1">User ID</label>
+                                <input type="number" id="uc-user-id" placeholder="123" title="User ID" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                            </div>
+                            <div>
+                                <label for="uc-cert-id" class="block text-sm text-gray-400 mb-1">Cert ID</label>
+                                <input type="number" id="uc-cert-id" placeholder="456" title="Certification ID" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                            </div>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label for="uc-issue" class="block text-sm text-gray-400 mb-1">Issue Date</label>
+                                <input type="date" id="uc-issue" title="Issue Date" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                            </div>
+                            <div>
+                                <label for="uc-expiry" class="block text-sm text-gray-400 mb-1">Expiry Date</label>
+                                <input type="date" id="uc-expiry" title="Expiry Date" required class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                            </div>
+                        </div>
+                        <div>
+                            <label for="uc-url" class="block text-sm text-gray-400 mb-1">Credential URL</label>
+                            <input type="url" id="uc-url" placeholder="https://..." title="Credential URL" class="w-full bg-obsidian-900 border border-gray-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-accent-500 transition-colors">
+                        </div>
+                        <button type="submit" class="w-full bg-indigo-500 hover:bg-indigo-400 text-white font-medium py-2 rounded-lg transition-colors">Link Certification</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right Column: Lists & Alerts -->
+            <div class="space-y-8">
+                
+                <!-- Renewal Alerts -->
+                <div class="bg-obsidian-800 p-6 rounded-xl border border-amber-900/50 shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white flex items-center gap-2">
+                        <svg class="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                        Expiring Within 30 Days
+                    </h2>
+                    <div id="alerts-container" class="space-y-3 max-h-64 overflow-y-auto pr-2 custom-scrollbar">
+                        <!-- Alert items will be injected here -->
+                        <div class="text-gray-500 text-sm italic">Loading alerts...</div>
+                    </div>
+                </div>
+
+                <!-- Recent Certifications -->
+                <div class="bg-obsidian-800 p-6 rounded-xl border border-gray-800 shadow-lg">
+                    <h2 class="text-xl font-semibold mb-4 text-white">All User Certifications</h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-gray-400">
+                            <thead class="text-xs text-gray-500 uppercase bg-obsidian-900/50">
+                                <tr>
+                                    <th class="px-4 py-3 rounded-tl-lg">ID</th>
+                                    <th class="px-4 py-3">User ID</th>
+                                    <th class="px-4 py-3">Cert ID</th>
+                                    <th class="px-4 py-3">Expiry</th>
+                                    <th class="px-4 py-3 rounded-tr-lg">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cert-table-body" class="divide-y divide-gray-800">
+                                <!-- Table rows will be injected here -->
+                                <tr>
+                                    <td colspan="5" class="px-4 py-4 text-center italic text-gray-600">Loading data...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
